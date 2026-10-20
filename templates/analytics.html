@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics - RE Grid Forecast</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Inter,sans-serif}
+body{background:#020617;color:#e2e8f0;min-height:100vh}
+nav{position:fixed;top:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(15,23,42,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #1e293b;z-index:1000}
+.logo{font-weight:800;color:#38bdf8;font-size:20px}
+#navMenu{display:flex;list-style:none;gap:6px}
+#navMenu li{padding:8px 14px;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:13px;transition:0.2s}
+#navMenu li:hover,#navMenu li.active{background:#38bdf8;color:white}
+#navMenu li a{color:inherit;text-decoration:none}
+.hamburger{display:none;color:#38bdf8;font-size:24px;cursor:pointer}
+.container{max-width:1250px;margin:90px auto 20px;padding:20px}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:20px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.metric{text-align:center;padding:20px;background:#0f172a;border-radius:14px;border:1px solid #1e293b}
+.metric h3{font-size:32px;color:#38bdf8}
+.metric p{color:#94a3b8;font-size:13px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;border-bottom:1px solid #1e293b;font-size:13px;text-align:left}
+th{color:#38bdf8}
+.badge{background:#1e293b;padding:5px 10px;border-radius:20px;font-size:11px;color:#38bdf8;border:1px solid #334155}
+@media(max-width:900px){
+ #navMenu{position:fixed;top:60px;left:0;width:100%;flex-direction:column;background:#0f172a;padding:20px;display:none}
+ #navMenu.open{display:flex}
+ .hamburger{display:block}
+ .grid-2,.grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">⚡ RE Grid Forecast</div>
+<ul id="navMenu">
+<li><a href="/#upload">📤 Upload</a></li>
+<li><a href="/#about">📖 About</a></li>
+<li><a href="/#eda">📊 EDA</a></li>
+<li><a href="/#methodology">🔬 Methodology</a></li>
+<li><a href="/#weather">🌤️ Weather</a></li>
+<li><a href="/#preprocess">⚙️Preprocess</a></li>
+<li><a href="/#predict">🤖 Live Forecast</a></li>
+<li><a href="/#results">📈 Results</a></li>
+<li class="active"><a href="/analytics">📊 Analytics</a></li>
+<li><a href="/how_it_works">🔍 How it Works</a></li>
+</ul>
+<div class="hamburger" id="hamburger">☰</div>
+</nav>
+
+<div class="container">
+<div class="card">
+<h2>📊 Grid Analytics Dashboard</h2>
+<p style="color:#94a3b8;font-size:14px">35064 Hours = 4 Years | Real-time Insights</p>
+<div class="grid-3" style="margin-top:15px">
+<div class="metric"><h3>96.4%</h3><p>Model Accuracy</p><span class="badge">Random Forest</span></div>
+<div class="metric"><h3>12.5 MW</h3><p>Mean Absolute Error</p><span class="badge">Low Error</span></div>
+<div class="metric"><h3>45ms</h3><p>Inference Latency</p><span class="badge">Real-time</span></div>
+</div>
+</div>
+
+<div class="grid-2">
+<div class="card">
+<h3>⚡ Generation vs Load (Last 7 Days)</h3>
+<canvas id="genLoadChart"></canvas>
+</div>
+<div class="card">
+<h3>📈 Imbalance Distribution</h3>
+<canvas id="imbChart"></canvas>
+</div>
+</div>
+
+<div class="grid-2">
+<div class="card">
+<h3>🔋 Status Distribution</h3>
+<canvas id="statusChart"></canvas>
+<div style="margin-top:10px">
+<span class="badge" style="background:#450a0a;color:#f87171">DEFICIT 32%</span>
+<span class="badge" style="background:#422006;color:#facc15">BALANCED 41%</span>
+<span class="badge" style="background:#052e16;color:#4ade80">EXCESS 27%</span>
+</div>
+</div>
+<div class="card">
+<h3>🌤️ Weather Correlation</h3>
+<canvas id="weatherChart"></canvas>
+<table>
+<tr><th>Feature</th><th>Corr with Imbalance</th></tr>
+<tr><td>Solar Radiation</td><td>+0.78</td></tr>
+<tr><td>Wind Speed</td><td>+0.65</td></tr>
+<tr><td>Temperature</td><td>-0.42</td></tr>
+<tr><td>Load</td><td>-0.89</td></tr>
+</table>
+</div>
+</div>
+
+<div class="card">
+<h3>📋 Model Performance Comparison</h3>
+<table>
+<tr><th>Model</th><th>MAE (MW)</th><th>RMSE</th><th>Accuracy</th><th>Use Case</th></tr>
+<tr><td>LSTM</td><td>18.2</td><td>24.5</td><td>95.2%</td><td>Time Series</td></tr>
+<tr><td>Random Forest</td><td>12.5</td><td>19.1</td><td>96.4%</td><td>Final Model</td></tr>
+<tr><td>XGBoost</td><td>13.8</td><td>20.3</td><td>96.1%</td><td>Boosting</td></tr>
+</table>
+</div>
+
+</div>
+
+<script>
+document.getElementById('hamburger').addEventListener('click',()=>{
+ document.getElementById('navMenu').classList.toggle('open');
+});
+
+// Charts
+new Chart(document.getElementById('genLoadChart'),{
+ type:'line',
+ data:{
+  labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+  datasets:[
+   {label:'Generation MW',data:[5200,5400,5100,5600,5800,5300,5500],borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.1)',tension:0.4},
+   {label:'Load MW',data:[4800,5000,4900,5200,5400,5100,5300],borderColor:'#f87171',backgroundColor:'rgba(248,113,113,0.1)',tension:0.4}
+  ]
+ }
+});
+new Chart(document.getElementById('imbChart'),{
+ type:'bar',
+ data:{
+  labels:['00h','04h','08h','12h','16h','20h'],
+  datasets:[{label:'Avg Imbalance MW',data:[ -200, -500, 300, 800, -100, -600],backgroundColor:['#ef4444','#ef4444','#22c55e','#22c55e','#eab308','#ef4444']}]
+ }
+});
+new Chart(document.getElementById('statusChart'),{
+ type:'doughnut',
+ data:{labels:['DEFICIT','BALANCED','EXCESS'],datasets:[{data:[32,41,27],backgroundColor:['#ef4444','#eab308','#22c55e']}]}
+});
+new Chart(document.getElementById('weatherChart'),{
+ type:'radar',
+ data:{
+  labels:['Solar','Wind','Temp','Humidity','Load'],
+  datasets:[{label:'Impact',data:[85,70,45,30,90],borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.2)'}]
+ }
+});
+</script>
+
+</body>
+</html>

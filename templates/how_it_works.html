@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How it works - RE Grid Forecast</title>
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family: Segoe UI,Inter,sans-serif;
+        scroll-behavior:smooth;
+    }
+    body{
+        background:#020617;
+        color:#e2e8f0;
+        min-height:100vh;
+    }
+    nav{
+        position:fixed;
+        top:0;
+        width:100%;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:12px 24px;
+        background:rgba(15,23,42,0,95);
+        backdrop-filter:blur(10px);
+        border-bottom: 1px solid #1e293b;
+        z-index:1000;
+
+    }
+    .logo{
+        font-weight:800;
+        color:#38bdf8;
+        font-size: 20px;
+    }
+    #navMenu li{
+        display:flex;
+        list-style:none;
+        gap:6px;
+    }
+    #navMenu li{
+        padding:8px 14px;
+        border-radius:8px;
+        color:#94a3b8;
+        cursor:pointer;
+        font-size:13px;
+        transition:0.2s;
+
+    }
+    #navMenu li:hover,#navMenu li.active{
+        background:#38bdf8;
+        color:white;
+    }
+    #navMenu li a{
+        color:inherit;
+        text-decoration:none;
+    }
+    .hamburger{
+        display:none;
+        color:#38bdf8;
+        font-size:24px;
+        cursor:pointer;
+    }
+    .container{
+        max-width:800px;
+        margin:90px auto 20px;
+        padding:20px;
+    }
+    .content-box{
+        background:#0f172a;
+        border:1px solid #1e293b;
+        border-radius:16px;
+        padding:30px;
+        box-shadow:0px 5px 20px rgba(0,0,0,0.3);
+    }
+    .deficit-box{
+        background:#450a0a;
+        border-left:5px solid #ef4444;
+        padding:12px;
+        border-radius:8px;
+        margin:10px 0;
+    }
+    .excess-box{
+        background:#052e16;
+        border-left:5px solid #22c55e;
+        padding:12px;
+        border-radius:8px;
+        margin:10px 0;
+    }
+    .balanced-box{
+        background:#422006;
+        border-left:5px solid #eab308;
+        padding:12px;
+        border-radius:8px;
+        margin:10px 0;
+    }
+    .metric{
+        display:inline-block;
+        background:#1e293b;
+        padding:10px 15px;
+        margin:5px;
+        border-radius:8px;
+        font-weight:bold;
+        color:#38bdf8;
+        border:1px solid #334155;
+    }
+    h1,h3{
+        color:#e2e8f0;
+    }
+    @media(max-width:900px){
+        #navMenu{
+            position:fixed;
+            top:60px;
+            left:0;
+            width:100%;
+            flex-direction:column;
+            background:#0f172a;
+            padding:20px;
+            display:none;
+        }
+        #navMenu.open{
+            display:flex;
+        }
+        .hamburger{
+            display:block;
+        }
+    }
+
+</style>
+</head>
+<body>
+<nav>
+<div class="logo">RE Grid Forecast</div>
+<ul id="navMenu">
+<li data-target="upload"><a href="/#upload">Upload</a></li>
+<li data-target="about"><a href="/about">About</a></li>
+<li data-target="eda"><a href="/#eda">EDA</a></li>
+<li data-target="methodology"><a href="/#methodology">Methodology</a></li>
+<li data-target="weather"><a href="/#weather">Weather</a></li>
+<li data-target="preprocess"><a href="/#preprocess">Preprocess</a></li>
+<li data-target="predict"><a href="/#predict">Live Forecast</a></li>
+<li data-target="results"><a href="/#results">Results</a></li>
+<li data-target="contact"><a href="/#contact">Contact</a></li>
+<li class="active"><a href="/how_it_works">How it Works</a></li>    
+</ul> 
+<div class="hamburger" id="hamburger">☰</div>
+</nav>
+
+<div class="container">
+<div class="content-box">
+<h1 style="text-align:center;color:#38bdf8">Page 4: How it Works</h1>
+<p style="text-align:center;color:#94a3b8">Real-time Renewable Energy Grid Imbalance Forecasting</p>
+
+<div class="deficit-box">
+<h3 style="color:#f87171;margin:0">High Deficit Pattern:</h3>
+<p style="font-size:14px;margin-top:6px"><b>low generation, high load, fossil gas down, coal outage, high temp 35C, evening peak 18-20h</b></p>
+<p style="font-size:13px;color:#94a3b8">Load > Generation by >1000 MW, Grid needs backup power!</p>
+</div>
+
+<div class="balanced-box">
+<h3 style="color:#facc15;margin:0">BALANCED Pattern:</h3>
+<p style="font-size:14px;margin-top:6px"><b>generation = load +- 500 MW, rolling average stable, temp 15-25C</b></p>
+<p style="font-size:13px;color:#94a3b8">Imbalance near 0, Grid stable operation</p>    
+</div>
+
+<div class="excess-box">
+<h3 style="color:#4ade80;margin:0">High EXCESS Pattern:</h3>
+<p style="font-size:14px;margin-top:6px"><b>High solar + wind, low load, sunny midday 11-15h</b></p>
+<p style="font-size:13px;color:#94a3b8">Generation > Load by >1000 MW, Export / Store in battery!</p>
+</div>
+
+<hr style="margin:20px 0;border-color:#1e293b">
+
+<h3 style="color:#38bdf8">Data Pipeline:</h3>
+<p style="font-size:14px;line-height:1.6"><b>1. Energy CSV:</b> 35064 hours - biomass, fossil brown coal gas, fossil gas, hard coal, oil, oil shale<br>
+<b>2. Weather CSV:</b> 178396 records -> Aggregated hourly -> 35064 hours<br>
+<b>3. Merged:</b> FINAL Dataset 35004 rows after cleaning</p>
+
+<h3 style="color:#38bdf8;margin-top:15px">Tech Stack:</h3>
+<p style="font-size:14px"><b>Regression:</b> RandomForestRegressor (50 trees, depth 12)<br>
+<b>Classification:</b> RandomForestClassifier for Grid Status</p>
+
+<div style="text-align:center;margin-top:15px">
+<span class="metric"></span>
+<span class="metric"></span>
+<span class="metric"></span>
+<span class="metric"></span>    
+</div>
+
+<hr style="margin:20px 0;border-color:#1e293b">
+<p style="font-size:13px;color:#94a3b8"><b> line_plot (Actual vs Pred), bar_plot (Accuracy), pie_chart (Status), confusion (Matrix), scatter (PCA), hist (Imbalance), word_count (Load Curve)<br>
+<p>Dataset:</b> 35004 hours = 4 years smart grid data</p>    
+</div>    
+</div>              
+
+<script>
+const hamburger=document.getElementById('hamburger');
+const navMenu=document.getElementById('navMenu');
+hamburger.addEventListener('click',()=>{navMenu.classList.toggle('open')});    
+</script>
+</body>
+</html>
+
+
+
