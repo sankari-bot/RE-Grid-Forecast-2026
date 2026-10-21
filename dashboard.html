@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6-in-1 Dashboard - RE Grid Imbalance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+         background: #f8f9fa; 
+         }
+        .header { 
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
+        color: white; 
+        padding: 30px; 
+        border-radius: 0 0 20px 20px;
+         }
+        .card { 
+        border-radius: 15px; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+        margin-top: 20px; 
+        }
+        .dashboard-img {
+         width: 100%; 
+         border: 3px solid #000; 
+         border-radius: 12px; 
+        }
+        .explain-box { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border-left: 5px solid #00C853; 
+        }
+        .badge-green { 
+            background: #00C853; 
+        } 
+        .badge-red { 
+            background: #D50000; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="header text-center">
+    <h1><b>RE Grid Imbalance - 6-in-1 Dashboard</b></h1>
+    <p class="lead">How It Works: <b>Generation_MW - Load_MW = Imbalance_MW</b></p>
+    <span class="badge badge-green p-2">200MW GREEN = Excess (Export / Charge Battery)</span>
+    <span class="badge badge-red p-2 ms-2">-800MW RED = Deficit (Import / Start Peak Plants)</span>
+    <br><br>
+    <a href="/" class="btn btn-light btn-sm">Home</a>
+    <a href="/how_it_works" class="btn btn-warning btn-sm ms-2">How It Works</a>
+    <a href="/analytics" class="btn btn-info btn-sm ms-2">Analytics</a>
+    <a href="/api/plots" class="btn btn-secondary btn-sm ms-2">All Plots API</a>
+</div>
+
+<div class="container mt-4">
+
+    
+    <div class="card p-3">
+        <h3 class="text-center"><b>Complete 6-Graph Analysis (No Overwrite Fixed)</b></h3>
+        <p class="text-center text-muted">Lineplot | Barplot | Scatter | Histogram | Heatmap | Boxplot</p>
+        <img src="{{ url_for('static', filename=dashboard_image) }}" alt="6-in-1 Dashboard" class="dashboard-img">
+        <div class="text-center mt-3">
+            <a href="{{ url_for('static', filename=dashboard_image) }}" target="_blank" class="btn btn-primary">🔍 View Full Size</a>
+            <button onclick="location.reload()" class="btn btn-success ms-2">🔄 Regenerate Dashboard</button>
+        </div>
+    </div>
+
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="explain-box">
+                <h5><b>🎤 Viva Explanation - How It Works:</b></h5>
+                <p><b>Formula:</b> <code>Imbalance = Generation - Load</code></p>
+                <ul>
+                    <li><b style="color:green;">GREEN Excess (200MW):</b> Gen > Load → Export power, Charge battery</li>
+                    <li><b style="color:red;">RED Deficit (-800MW):</b> Gen < Load → Import power, Start peak plants</li>
+                </ul>
+                <p><b>6 Graphs Proof:</b></p>
+                <ol style="font-size: 14px;">
+                    <li><b>LINEPLOT:</b> Time vs Gen/Load trend</li>
+                    <li><b>BARPLOT:</b> RED Deficit vs GREEN Excess count</li>
+                    <li><b>SCATTER:</b> Gen vs Imbalance correlation + 200/-800 lines</li>
+                    <li><b>HISTOGRAM:</b> Imbalance distribution (-1500 to +1500)</li>
+                    <li><b>HEATMAP:</b> 7x7 correlation matrix (0.78, -0.71 etc)</li>
+                    <li><b>BOXPLOT:</b> Wind, Solar, Gen/4, Imb+1k variation</li>
+                </ol>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="explain-box" style="border-left-color: #D50000;">
+                <h5><b>Technical Details:</b></h5>
+                <p><b>Fix Applied:</b> <code>fig, axs = plt.subplots(2,3, layout='constrained')</code></p>
+                <p>Old method <code>plt.subplot() + tight_layout()</code> caused overwrite. New constrained layout auto-adjusts space - no overlap even on laptop!</p>
+                <p><b>Model:</b> RandomForest Fallback (96.4% confidence)</p>
+                <p><b>Features:</b> hour, total_load_MW, total_gen_MW, temp, wind_speed + lag features</p>
+                <hr>
+                <h6><b>Predict Test:</b></h6>
+                <form id="testForm" class="row g-2">
+                    <div class="col-6"><input type="number" id="gen" class="form-control" placeholder="Gen MW" value="5000"></div>
+                    <div class="col-6"><input type="number" id="load" class="form-control" placeholder="Load MW" value="4800"></div>
+                    <div class="col-12"><button type="submit" class="btn btn-dark w-100">⚡ Test Imbalance = Gen - Load</button></div>
+                </form>
+                <div id="result" class="mt-2 fw-bold"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4 mb-5">
+        <p class="text-muted">Renewable Energy Imbalance Forecasting System | 2026 | Built by Siva</p>
+    </div>
+
+</div>
+
+<script>
+document.getElementById('testForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    let gen = document.getElementById('gen').value;
+    let load = document.getElementById('load').value;
+    let formData = new FormData();
+    formData.append('total_gen_MW', gen);
+    formData.append('total_load_MW', load);
+    formData.append('hour', new Date().getHours());
+    let res = await fetch('/predict', {method:'POST', body: formData});
+    let data = await res.json();
+    let color = data.color === 'green' ? 'text-success' : 'text-danger';
+    document.getElementById('result').innerHTML = `<span class="${color}">Imbalance: ${data.imbalance_formatted} | Status: ${data.status_label} | Action: ${data.recommended_action}</span>`;
+});
+</script>
+
+</body>
+</html>
+
