@@ -25,8 +25,8 @@ if 'city_name' in weather.columns:
     agg = {c: 'mean' for c in ['temp','humidity','wind_speed','pressure','clouds_all'] if c in weather.columns}
     weather = weather.groupby('time').agg(agg).reset_index()
     print(f"Weather aggregated: {len(weather)}")
-energy['time'] = energy['time'].dt.floor('h')
-weather['time'] = weather['time'].dt.floor('h')
+energy['time'] = energy['time'].dt.floor('h')             
+weather['time'] = weather['time'].dt.floor('h')    
 df = pd.merge(energy.sort_values('time'), weather.sort_values('time'), on='time', how='inner')
 df = df.drop_duplicates(subset=['time'], keep='first')
 df = df.sort_values('time').reset_index(drop=True)
@@ -158,7 +158,7 @@ plt.colorbar()
 for i in range(cm.shape[0]):
     for j in range(cm.shape[1]):
         plt.text(j,i,cm[i,j], ha='center', va='center', fontweight='bold')
-plt.xlabel('Predicted'); plt.ylabel('Actual')
+plt.xlabel('Predicted');plt.ylabel('Actual')
 plt.xticks([0,1,2,3],['H.Def','Def','Exc','H.Exc']); plt.yticks([0,1,2,3],['H.Def','Def','Exc','H.Exc'])
 plt.savefig('static/confusion.png', bbox_inches='tight', dpi=150)
 plt.close()
